@@ -1,0 +1,7 @@
+﻿
+namespace StarWarsInformator
+{
+    class CharacterInfo
+    {
+    }
+}
