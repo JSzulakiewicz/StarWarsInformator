@@ -20,7 +20,8 @@ namespace SwApiClient
             _httpClient = httpClient;
         }
          
-        private async Task<T> GetEntity<T>(string url)
+
+        private async Task<T> GetEntity<T>(string url) where T : BaseSwEntity
         {
             try
             {
@@ -37,54 +38,48 @@ namespace SwApiClient
                     _logger.InfoFormat("Successfully downloaded data from {0}", url);
                     using (var stream = await response.Content.ReadAsStreamAsync())
                     {
-                        try
-                        {
-                            var serializer = new JsonSerializer();
-                            serializer.ReferenceResolver = new ReferenceResolver();
-                            var person = serializer.Deserialize<T>(new JsonTextReader(new StreamReader(stream)));
-
-                            return person;
-                        }
-                        catch(Exception ex)
-                        {
-                            var message = string.Format("Data returned from {0} has invalid format.", url);
-                            _logger.Error(message);
-                            throw new DataParsingException(message, ex);
-                        }
+                        return ParseJsonStream<T>(stream);
                     }
                 }
             }
-            catch(Exception ex)
+            catch(HttpRequestException ex)
             {
                 _logger.ErrorFormat("HttpClient exception: {0}", ex.Message);
                 throw new ConnectionErrorException("An error occured when trying to connect.", ex);
             }
         }
 
+        public T ParseJsonStream<T>(Stream jsonStream) where T : BaseSwEntity
+        {
+            var serializer = new JsonSerializer();
+            return serializer.Deserialize<T>(new JsonTextReader(new StreamReader(jsonStream)));
+        }
+
+
         /// <summary>
         /// Returns person identified by URL
         /// </summary>
-        public Task<Person> GetPerson(string url)
-            => GetEntity<Person>(url);
+        public async Task<Person> GetPerson(string url)
+            => await GetEntity<Person>(url);
 
         /// <summary>
         /// Returns vehicle identified by URL
         /// </summary>
-        public Task<Vehicle> GetVehicle(string url)
-            => GetEntity<Vehicle>(url);
+        public async Task<Vehicle> GetVehicle(string url)
+            => await GetEntity<Vehicle>(url);
 
-            
+
         /// <summary>
         /// Returns film identified by URL
         /// </summary>
-        public Task<Film> GetFilm(string url)
-            => GetEntity<Film>(url);
+        public async Task<Film> GetFilm(string url)
+            => await GetEntity<Film>(url);
 
             
         /// <summary>
         /// Returns Ship identified by URL
         /// </summary>
-        public Task<Ship> GetShip(string url)
-            => GetEntity<Ship>(url);
+        public async Task<Ship> GetShip(string url)
+            => await GetEntity<Ship>(url);
     }
 }

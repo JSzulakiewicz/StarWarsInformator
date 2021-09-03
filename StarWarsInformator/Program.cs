@@ -14,13 +14,19 @@ namespace StarWarsInformator
             var log = LogManager.GetLogger("default");
 
             log.Info("Start");
+            if (args.Length < 2)
+            {
+                log.Info("Not enough parameters!");
+            }
+                
             try
             {
+                
                 var client = new SwApiClient.SwApiClient(log, new HttpClient());
 
-               // var result = client.GetPerson(1);
+                var result = new TargetPerson(client, args[0]);
 
-                //result.Wait();
+                result.ExportToJson(args[1]);
             }
             catch(Exception ex)
             {

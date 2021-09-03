@@ -1,15 +1,41 @@
-﻿namespace SwApiClient.Model
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+
+namespace SwApiClient.Model
 {
-    public class Film
+    public class Film: BaseSwEntity
     {
+        [JsonProperty]
         public string Title { get; set; }
 
-/*
- * 
-Other properties returned from api could be added here, if our client should be universal.
-Only properties required by specification was added here.
-*
-*/
+        [JsonProperty(PropertyName = "episode_id")]
+        public string EpisodeId { get; set; }
+        
+        [JsonProperty(PropertyName = "opening_crawl")]
+        public string OpeningCrawl { get; set; }
 
+        [JsonProperty]
+        public string Director { get; set; }
+
+        [JsonProperty]
+        public string Producer { get; set; }
+
+        [JsonProperty(PropertyName = "release_date")]
+        public string Released { get; set; }
+
+        [JsonProperty]
+        public IEnumerable<string> Species { get; set; }
+
+        [JsonProperty]
+        public IEnumerable<string> Starships { get; set; }
+
+        [JsonProperty]
+        public IEnumerable<string> Vehicles { get; set; }
+
+        [JsonProperty]
+        public IEnumerable<string> Characters { get; set; }
+
+        [JsonProperty]
+        public IEnumerable<string> Planets { get; set; }
     }
 }

@@ -1,17 +1,20 @@
 ﻿
 using log4net;
 using Moq;
+using Moq.Protected;
 using NUnit.Framework;
+using StarWarsInformatorTests.Mocks;
 using SwApiClient;
+using SwApiClient.Model;
+using System.Net;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace StarWarsInformatorTests
 {
     class SwApiShould
     {
-        private ILog logMock;
-
-
         [Test]
         public void create_without_error()
         {
@@ -45,23 +48,70 @@ namespace StarWarsInformatorTests
         public void throw_exception_on_connection_error()
         {
             var logMock = new Mock<ILog>();
+            var clientMock = FakeHttpClients.GetFakeClientThatThrowsException();
 
-            var httpClientMock = new Mock<HttpClient>();
+            var client = new SwApiClient.SwApiClient(logMock.Object, clientMock);
 
-            httpClientMock.Setup(client => client.GetStreamAsync("foo")).Throws(new HttpRequestException());
-
-            var client = new SwApiClient.SwApiClient(logMock.Object, httpClientMock.Object);
-            try
-            {
-                client.GetPerson("foo").Wait();
-            }
-            catch (ConnectionErrorException)
-            {
-                Assert.Pass();
-            }
-
-            Assert.Fail();
+            Assert.ThrowsAsync<ConnectionErrorException>(() => client.GetPerson("http://sampleAddress/something/1/"));
         }
 
+
+        [Test]
+        public void return_correct_person_object()
+        {
+            var logMock = new Mock<ILog>();
+            var clientMock = FakeHttpClients.GetFakeClientThatReturnsData(FakeHttpClients.SampleFile.SamplePerson);
+
+            var client = new SwApiClient.SwApiClient(logMock.Object, clientMock);
+
+            var result = client.GetPerson("http://sampleAddress/something/1/").Result;
+
+            Assert.IsNotNull(result);
+            Assert.True(result is Person);
+        }
+
+        [Test]
+        public void return_correct_vehicle_object()
+        {
+            var logMock = new Mock<ILog>();
+            var clientMock = FakeHttpClients.GetFakeClientThatReturnsData(FakeHttpClients.SampleFile.SampleVehicle);
+
+            var client = new SwApiClient.SwApiClient(logMock.Object, clientMock);
+
+            var result = client.GetVehicle("http://sampleAddress/something/1/").Result;
+
+            Assert.IsNotNull(result);
+            Assert.True(result is Vehicle);
+        }
+
+
+        [Test]
+        public void return_correct_ship_object()
+        {
+            var logMock = new Mock<ILog>();
+            var clientMock = FakeHttpClients.GetFakeClientThatReturnsData(FakeHttpClients.SampleFile.SampleShip);
+
+            var client = new SwApiClient.SwApiClient(logMock.Object, clientMock);
+
+            var result = client.GetShip("http://sampleAddress/something/1/").Result;
+
+            Assert.IsNotNull(result);
+            Assert.True(result is Ship);
+        }
+
+
+        [Test]
+        public void return_correct_film_object()
+        {
+            var logMock = new Mock<ILog>();
+            var clientMock = FakeHttpClients.GetFakeClientThatReturnsData(FakeHttpClients.SampleFile.SampleVehicle);
+
+            var client = new SwApiClient.SwApiClient(logMock.Object, clientMock);
+
+            var result = client.GetFilm("http://sampleAddress/something/1/").Result;
+
+            Assert.IsNotNull(result);
+            Assert.True(result is Film);
+        }
     }
 }
