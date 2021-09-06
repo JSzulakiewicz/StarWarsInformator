@@ -1,15 +1,10 @@
-﻿
-using log4net;
+﻿using log4net;
 using Moq;
-using Moq.Protected;
 using NUnit.Framework;
 using StarWarsInformatorTests.Mocks;
 using SwApiClient;
 using SwApiClient.Model;
-using System.Net;
 using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace StarWarsInformatorTests
 {

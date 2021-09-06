@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Net.Http;
 using log4net;
 
@@ -16,12 +15,11 @@ namespace StarWarsInformator
             log.Info("Start");
             if (args.Length < 2)
             {
-                log.Info("Not enough parameters!");
+                log.Info("Not enough parameters! Proper invocation should be: StarWarsInformator.exe <source uri> <target file>, in example: StarWarsInformator.exe http://swapi.dev/api/people/1/ Skywalker.json");
             }
                 
             try
             {
-                
                 var client = new SwApiClient.SwApiClient(log, new HttpClient());
 
                 var result = new TargetPerson(client, args[0]);
